@@ -1,0 +1,302 @@
+/* css/style.css */
+
+/* ============================================
+   海洋岩土工程计算工具 - 自定义样式
+   ============================================ */
+
+/* 公式卡片悬停效果 */
+.formula-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* 图表容器背景渐变 */
+.chart-container {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+}
+
+/* 参数输入框焦点效果 */
+.parameter-input:focus-within {
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3);
+}
+
+/* 海洋主题渐变背景 */
+.ocean-bg {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+}
+
+/* 波浪动画 */
+.wave-animation {
+    animation: wave 3s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* 参数输入卡片内部样式 */
+.parameter-input input {
+    transition: all 0.2s ease;
+}
+
+.parameter-input input:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+/* 结果展示区域样式 */
+.result-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0284c7;
+}
+
+/* 下拉菜单动画 */
+#anchorDropdownMenu {
+    transition: all 0.3s ease;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 菜单项悬停效果 */
+.anchor-menu-item {
+    transition: all 0.2s ease;
+}
+
+.anchor-menu-item:hover {
+    transform: translateX(5px);
+}
+
+/* ========== 新增：参数网格布局 ========== */
+.param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+}
+
+/* 确保参数输入卡片在网格内正常显示 */
+.param-grid .parameter-input {
+    margin-bottom: 0;
+}
+
+/* 平板端: 2列 */
+@media (max-width: 1024px) {
+    .param-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 手机端: 1列 */
+@media (max-width: 640px) {
+    .param-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== 新增：左侧导航栏固定定位 ========== */
+/* 主容器需要设置为相对定位，为固定定位元素提供参考 */
+.main-grid-container {
+    position: relative;
+}
+
+/* 左侧导航栏固定定位 */
+.formula-sidebar {
+    position: sticky;
+    top: 1.5rem;  /* 距离顶部1.5rem，避免贴边 */
+    align-self: start;
+    max-height: calc(100vh - 3rem);  /* 最大高度为视口高度减去顶部和底部间距 */
+    overflow-y: auto;  /* 内容过多时内部滚动 */
+}
+
+/* 自定义滚动条样式（可选） */
+.formula-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.formula-sidebar::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+.formula-sidebar::-webkit-scrollbar-thumb {
+    background: #0284c7;
+    border-radius: 3px;
+}
+
+.formula-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #0369a1;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .formula-card {
+        padding: 0.75rem;
+    }
+    
+    .formula-card h3 {
+        font-size: 0.9rem;
+    }
+    
+    /* 移动端取消固定定位，恢复正常流式布局 */
+    .formula-sidebar {
+        position: static;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+
+/* ========== 新增：三列精确比例控制 ========== */
+/* 桌面端：精确控制三列比例为 10% / 40% / 50% */
+@media (min-width: 1024px) {
+    .main-grid-container {
+        display: grid;
+        grid-template-columns: 10% 40% 50%;
+        gap: 1.5rem;
+        /* 动态边距：最小1rem，最大3rem，随视口宽度增长 */
+        padding-left: clamp(1rem, 3vw, 3rem);
+        padding-right: clamp(1rem, 3vw, 3rem);
+        /* 限制最大宽度，避免内容过度拉伸 */
+        /*max-width: 1600px;*/
+        margin: 0 auto;
+    }
+}
+
+/* 平板端：自动适配为两列布局（1024px以下，640px以上） */
+@media (max-width: 1024px) and (min-width: 640px) {
+    .main-grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 1.5rem;
+        padding: 0 1rem;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    /* 右侧结果区占满第二行 */
+    .main-grid-container > :nth-child(3) {
+        grid-column: span 2;
+    }
+}
+
+/* 手机端：单列布局 */
+@media (max-width: 640px) {
+    .main-grid-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 1rem;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+/* ========== 模块信息区折叠动画 ========== */
+#moduleInfoContent {
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+#moduleInfoContent.collapsed {
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 头部悬停效果增强 */
+#moduleInfoToggle {
+    user-select: none;
+}
+
+#moduleInfoToggle:active {
+    transform: scale(0.99);
+}
+
+/* 信息区内部滚动（内容过多时） */
+#moduleInfoContent {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* 自定义信息区滚动条 */
+#moduleInfoContent::-webkit-scrollbar {
+    width: 4px;
+}
+
+#moduleInfoContent::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 2px;
+}
+
+#moduleInfoContent::-webkit-scrollbar-thumb {
+    background: #0284c7;
+    border-radius: 2px;
+}
+
+/* 信息区内容样式 */
+.module-info-card {
+    background: #f8fafc;
+    border-left: 3px solid #0284c7;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.module-info-card:last-child {
+    margin-bottom: 0;
+}
+
+.module-info-title {
+    font-weight: 600;
+    color: #0c4a6e;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.module-info-title i {
+    color: #0284c7;
+}
+
+.module-info-text {
+    color: #334155;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.module-info-ref {
+    background: #e6f7ff;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+
+
+/* 当屏幕超过 1600px 时，内容不再增宽，但边距继续增加 
+@media (min-width: 1600px) {
+    .main-grid-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        /* 左右边距自动为 (100% - 1600px) / 2，但保留最小边距 
+        padding-left: max(1rem, calc((100% - 1600px) / 2));
+        padding-right: max(1rem, calc((100% - 1600px) / 2));
+    }
+}
+*/

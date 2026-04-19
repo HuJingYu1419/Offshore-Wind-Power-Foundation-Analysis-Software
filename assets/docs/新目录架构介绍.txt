@@ -1,0 +1,396 @@
+================================================================================
+                    海洋岩土工程计算工具 - 项目结构说明文档
+================================================================================
+
+版本: 1.0
+更新日期: 2026-04-19
+维护者: Web开发团队
+
+================================================================================
+一、项目概述
+================================================================================
+
+本项目是一个纯 HTML/JavaScript 的海洋岩土工程计算工具，无框架依赖。
+主要功能包括：地基承载力、沉降计算、波浪荷载、边坡稳定性，以及6种锚固件
+（重力锚、鱼雷锚、板锚、桩锚、拖曳锚、吸力锚）的分析计算。
+
+技术栈：
+- Tailwind CSS (样式框架)
+- Font Awesome (图标库)
+- Chart.js (图表库)
+- MathJax (数学公式渲染)
+
+================================================================================
+二、完整目录结构
+================================================================================
+
+海洋岩土工程计算工具/
+│
+├── index.html                              # 主入口页面
+│
+├── css/
+│   └── style.css                           # 全局样式
+│
+├── js/
+│   ├── main.js                             # 主入口模块（路由、事件、计算分发）
+│   │
+│   ├── utils/                              # 全局工具函数
+│   │   ├── formGenerator.js                # 表单生成器（条件显示、分组）
+│   │   ├── resultRenderer.js               # 结果渲染分发器
+│   │   └── validator.js                    # 校验工具分发器
+│   │
+│   ├── Anchor/                             # 锚固件模块根目录
+│   │   │
+│   │   ├── index.js                        # 锚固件统一注册表
+│   │   │
+│   │   ├── shared/                         # 共享资源（所有锚固件共用）
+│   │   │   ├── baseValidator.js            # 校验基类（ValidationResult + 通用规则）
+│   │   │   └── baseRenderer.js             # 渲染基类（通用渲染函数）
+│   │   │
+│   │   ├── gravityAnchor/                  # [完成] 重力锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── torpedoAnchor/                  # [完成] 鱼雷锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── plateAnchor/                    # [完成] 板锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── pileAnchor/                     # [完成] 桩锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── dragAnchor/                     # [完成] 拖曳锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   └── suctionAnchor/                  # [架构完成] 吸力锚模块（多场景）
+│   │       ├── index.js                    # 入口 + 子场景切换逻辑
+│   │       ├── shared/                     # 内部共享
+│   │       │   └── suctionUtils.js
+│   │       ├── installation-clay/          # 子场景1: 安装计算（黏土）
+│   │       │   ├── config.js
+│   │       │   ├── calculator.js
+│   │       │   ├── validator.js
+│   │       │   ├── renderer.js
+│   │       │   └── infoContent.js
+│   │       ├── installation-sand/          # 子场景2: 安装计算（砂土）
+│   │       │   ├── config.js
+│   │       │   ├── calculator.js
+│   │       │   ├── validator.js
+│   │       │   ├── renderer.js
+│   │       │   └── infoContent.js
+│   │       └── capacity-clay/              # 子场景3: 承载力计算（黏土）
+│   │           ├── config.js
+│   │           ├── calculator.js
+│   │           ├── validator.js
+│   │           ├── renderer.js
+│   │           └── infoContent.js
+│   │
+│   ├── bearing/                            # 地基承载力模块（其他模块）
+│   ├── settlement/                         # 沉降计算模块
+│   ├── wave/                               # 波浪荷载模块
+│   └── slope/                              # 边坡稳定模块
+│
+└── assets/                                 # 静态资源
+    ├── algorighm/                          # 算法参考代码
+    ├── docs/                               # 项目文档
+    └── pics/                               # 图片资源
+
+
+================================================================================
+三、模块开发规范
+================================================================================
+
+每个锚固件模块独立成一个目录，必须包含以下5个标准文件：
+
++------------------+------------------------------------------------------------+
+| 文件名           | 作用                                                       |
++------------------+------------------------------------------------------------+
+| config.js        | 模块元信息 + 参数定义，导出: id, name, description, parameters |
+| calculator.js    | 核心计算逻辑，导出: calculate(params)                       |
+| validator.js     | 参数校验规则，导出: validate(params)                        |
+| renderer.js      | 结果渲染HTML，导出: render(result, module, params, validation) |
+| infoContent.js   | 模块信息区内容，导出: getInfoContent()                      |
++------------------+------------------------------------------------------------+
+
+
+3.1 config.js 参数定义格式
+
+parameters 数组中的每个对象包含以下字段：
+
+{
+    id: "参数唯一标识",
+    name: "参数显示名称",
+    unit: "单位",
+    default: 默认值,
+    category: "分类",      // 可选值见下文
+    min: 最小值,           // 可选
+    max: 最大值,           // 可选
+    condition: { 关联参数id: 期望值 },  // 条件显示，可选
+    options: ["选项值"],   // select类型时使用
+    optionsLabel: ["选项标签"], // select类型时使用
+    note: "提示文字"       // 可选
+}
+
+3.2 分类标识对照表
+
+分类值        显示名称
+------------------------------------
+geometry      📐 几何参数
+material      🔧 材料参数
+environment   💧 环境参数
+soil          🌍 土体参数
+coefficient   📊 承载力系数
+mode          ⚙️ 计算模式
+anchor        📦 锚体参数
+load          ⚡ 荷载参数
+
+
+3.3 标准文件模板
+
+【config.js 模板】
+
+export const id = 'module-id';
+export const name = '模块显示名称';
+export const description = '模块功能描述';
+
+export const parameters = [
+    { id: "param1", name: "参数名", unit: "单位", default: 100, category: "geometry" }
+];
+
+【calculator.js 模板】
+
+export function calculate(params) {
+    // 计算逻辑
+    return {
+        value: 结果值,
+        unit: "单位",
+        text: "结果描述文字",
+        details: { 分项数据1: 值1, 分项数据2: 值2 }
+    };
+}
+
+【validator.js 模板】
+
+import { ValidationResult, baseRules } from '../shared/baseValidator.js';
+
+export function validate(params) {
+    const result = new ValidationResult();
+    
+    // 错误（阻止计算）
+    if (params.value <= 0) result.addError("参数必须为正数");
+    
+    // 警告（仅提示）
+    if (params.value > 1000) result.addWarning("参数值偏大");
+    
+    // 信息（建议性提示）
+    result.addInfo("参考建议...");
+    
+    return result;
+}
+
+【renderer.js 模板】
+
+import { 
+    renderResultHeader, 
+    renderDetailsCard, 
+    renderParameterSummary, 
+    renderValidationAlert 
+} from '../shared/baseRenderer.js';
+
+export function render(result, module, params, validation) {
+    let html = '';
+    
+    if (validation) html += renderValidationAlert(validation);
+    html += renderResultHeader(result.text);
+    html += renderDetailsCard('分项计算结果', '...内容...');
+    html += renderParameterSummary(module, params);
+    
+    return html;
+}
+
+【infoContent.js 模板】
+
+export function getInfoContent() {
+    return `
+        <div class="module-info-card">
+            <div class="module-info-title">
+                <i class="fas fa-icon"></i>
+                <span>标题</span>
+            </div>
+            <div class="module-info-text">
+                说明文字...
+            </div>
+        </div>
+    `;
+}
+
+
+================================================================================
+四、新增模块步骤
+================================================================================
+
+步骤1: 创建模块目录
+------------------------------------------------
+在 js/Anchor/ 下创建新目录，如 newAnchor/
+
+
+步骤2: 创建5个标准文件
+------------------------------------------------
+newAnchor/
+├── config.js
+├── calculator.js
+├── validator.js
+├── renderer.js
+└── infoContent.js
+
+
+步骤3: 编写模块内容
+------------------------------------------------
+按照上述模板填充各文件内容
+
+
+步骤4: 注册到系统
+------------------------------------------------
+编辑 js/Anchor/index.js，添加导入和注册：
+
+import * as newModule from './newAnchor/index.js';
+
+export const anchorModules = {
+    // ... 现有模块 ...
+    newId: newModule
+};
+
+
+步骤5: 更新主入口（如需要）
+------------------------------------------------
+如果新模块需要出现在导航栏，还需更新：
+- index.html 中的导航栏按钮
+- js/main.js 中的 modules 映射表
+
+
+================================================================================
+五、共享资源说明
+================================================================================
+
+5.1 baseValidator.js - 校验基类
+
+提供以下导出：
+
+- ValidationResult 类
+    .addError(message)   - 添加错误（阻止计算）
+    .addWarning(message) - 添加警告（仅提示）
+    .addInfo(message)    - 添加信息（建议）
+    .isValid             - 是否有错误
+
+- baseRules 通用校验函数
+    .positive(value, name)   - 正数校验
+    .nonNegative(value, name)- 非负数校验
+    .range(value, name, min, max) - 范围校验
+    .aspectRatio(L, D, name, min, max) - 长径比校验
+
+- createValidationResult() - 创建 ValidationResult 实例
+
+
+5.2 baseRenderer.js - 渲染基类
+
+提供以下导出：
+
+- formatNumber(value, unit)     - 数字格式化
+- renderKeyValueRow(key, value, unit) - 键值对行
+- renderValidationAlert(validation)    - 校验警告渲染
+- renderParameterSummary(module, params) - 参数摘要渲染
+- renderResultHeader(text)       - 结果头部渲染
+- renderDetailsCard(title, content) - 详情卡片渲染
+
+
+================================================================================
+六、吸力锚模块特殊说明
+================================================================================
+
+吸力锚支持多子场景切换，目录结构特殊：
+
+suctionAnchor/
+├── index.js              # 入口 + 子场景切换逻辑
+├── shared/               # 内部共享
+└── [子场景名]/           # 每个子场景包含完整的5个文件
+
+子场景在 suctionAnchor/index.js 的 subScenarios 对象中注册。
+
+添加新子场景步骤：
+1. 在 suctionAnchor/ 下创建子场景目录
+2. 创建5个标准文件
+3. 在 suctionAnchor/index.js 的 subScenarios 中添加注册
+4. 在 getSubScenarioList() 中添加切换按钮配置
+
+
+================================================================================
+七、模块完成状态
+================================================================================
+
++----------------------+--------+---------------------------------------------+
+| 模块                 | 状态   | 说明                                        |
++----------------------+--------+---------------------------------------------+
+| 地基承载力          | ✅ 完成 | 原有模块，保持原有结构                      |
+| 沉降计算            | ✅ 完成 | 原有模块，保持原有结构                      |
+| 波浪荷载            | ✅ 完成 | 原有模块，保持原有结构                      |
+| 边坡稳定性          | ✅ 完成 | 原有模块，保持原有结构                      |
+| 重力锚              | ✅ 完成 | 已迁移至新架构                              |
+| 鱼雷锚              | ✅ 完成 | 已迁移至新架构                              |
+| 板锚                | ✅ 完成 | 已迁移至新架构                              |
+| 桩锚                | ✅ 完成 | 已迁移至新架构                              |
+| 拖曳锚              | ✅ 完成 | 已迁移至新架构                              |
+| 吸力锚              | ⏳ 架构  | 多场景架构完成，具体计算逻辑待填充          |
++----------------------+--------+---------------------------------------------+
+
+
+================================================================================
+八、注意事项
+================================================================================
+
+1. 所有新模块必须遵循5个标准文件的规范
+2. 参数分类(category)必须使用预定义的值
+3. 校验错误(error)会阻止计算，警告(warning)和信息(info)仅提示
+4. 渲染器必须调用 baseRenderer 中的函数保持风格统一
+5. 吸力锚以外模块保持单场景，不支持内部子场景切换
+6. 图片资源放在 assets/pics/ 下，路径使用 "/assets/pics/文件名.png"
+
+
+================================================================================
+九、常见问题
+================================================================================
+
+Q: 如何调试模块加载问题？
+A: 打开浏览器控制台(F12)，查看是否有红色错误信息
+
+Q: 导航栏按钮无响应？
+A: 检查 js/main.js 中的 modules 映射表是否包含该模块
+
+Q: 计算结果格式不对？
+A: 检查 renderer.js 是否使用了 baseRenderer 中的 formatNumber 函数
+
+Q: 参数表单不显示条件字段？
+A: 检查 config.js 中 condition 字段的关联参数id是否正确
+
+================================================================================
+文档结束
+================================================================================

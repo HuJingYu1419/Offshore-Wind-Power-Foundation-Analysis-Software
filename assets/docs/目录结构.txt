@@ -1,0 +1,90 @@
+海上风电基础分析软件/
+│
+├── index.html                              # 主入口页面
+│
+├── css/
+│   └── style.css                           # 全局样式（含响应式布局、固定侧边栏、折叠动画等）
+│
+├── js/
+│   ├── main.js                             # 主入口模块（模块路由、事件绑定、计算分发）
+│   │
+│   ├── utils/                              # 全局工具函数目录
+│   │   ├── formGenerator.js                # 表单生成器（支持条件显示、分组表单）
+│   │   ├── resultRenderer.js               # 结果渲染主入口（分发器）
+│   │   └── validator.js                    # 校验工具主入口（统一分发）
+│   │
+│   ├── Anchor/                             # 锚固件模块根目录
+│   │   │
+│   │   ├── index.js                        # 锚固件统一注册表
+│   │   │
+│   │   ├── shared/                         # 共享资源（所有锚固件共用）
+│   │   │   ├── baseValidator.js            # 校验基类（ValidationResult + 通用规则）
+│   │   │   └── baseRenderer.js             # 渲染基类（通用渲染函数）
+│   │   │
+│   │   ├── gravityAnchor/                  # ✅ 重力锚模块
+│   │   │   ├── config.js                   # 参数配置
+│   │   │   ├── calculator.js               # 计算逻辑
+│   │   │   ├── validator.js                # 校验规则
+│   │   │   ├── renderer.js                 # 结果渲染
+│   │   │   └── infoContent.js              # 模块信息展示
+│   │   │
+│   │   ├── torpedoAnchor/                  # ✅ 鱼雷锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── plateAnchor/                    # ✅ 板锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── pileAnchor/                     # ✅ 桩锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   ├── dragAnchor/                     # ✅ 拖曳锚模块
+│   │   │   ├── config.js
+│   │   │   ├── calculator.js
+│   │   │   ├── validator.js
+│   │   │   ├── renderer.js
+│   │   │   └── infoContent.js
+│   │   │
+│   │   └── suctionAnchor/                  # ⏳ 吸力锚模块（多场景架构）
+│   │       ├── index.js                    # 模块入口 + 子场景切换逻辑
+│   │       ├── shared/                     # 吸力锚内部共享
+│   │       │   └── suctionUtils.js
+│   │       ├── installation-clay/          # 安装计算（黏土）
+│   │       │   ├── config.js
+│   │       │   ├── calculator.js
+│   │       │   ├── validator.js
+│   │       │   ├── renderer.js
+│   │       │   └── infoContent.js
+│   │       ├── installation-sand/          # 安装计算（砂土）
+│   │       │   ├── config.js
+│   │       │   ├── calculator.js
+│   │       │   ├── validator.js
+│   │       │   ├── renderer.js
+│   │       │   └── infoContent.js
+│   │       └── capacity-clay/              # 承载力计算（黏土）
+│   │           ├── config.js
+│   │           ├── calculator.js
+│   │           ├── validator.js
+│   │           ├── renderer.js
+│   │           └── infoContent.js
+│   │
+│   ├── bearing/                            # 地基承载力模块（其他模块保持不变）
+│   ├── settlement/                         # 沉降计算模块
+│   ├── wave/                               # 波浪荷载模块
+│   └── slope/                              # 边坡稳定模块
+│
+└── assets/                                 # 静态资源目录
+    ├── algorighm/                          # 算法实现代码参考
+    ├── docs/                               # 项目说明文档
+    └── pics/                               # 原理图、图标等图片

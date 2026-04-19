@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海上风电基础分析软件</title>
+    <!-- 外部依赖 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MathJax 数学公式渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+</head>
+<body class="bg-ocean-50 min-h-screen">
+    <!-- Header -->
+    <header class="ocean-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-water text-3xl wave-animation"></i>
+                <h1 class="text-2xl md:text-3xl font-bold">海上风电基础分析软件</h1>
+            </div>
+            <div class="hidden md:block">
+                <p class="text-ocean-100">专业、精准、高效</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-8">
+        <div class="grid gap-6 main-grid-container">
+            <!-- 左侧公式选择区 -->
+            <div class="formula-sidebar">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-ocean-800 mb-4 flex items-center">
+                        <i class="fas fa-calculator mr-2"></i>计算场景
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="formula-card bg-ocean-50 border-l-4 border-ocean-500 p-4 rounded cursor-pointer transition-all duration-300" data-formula="bearing">
+                            <h3 class="font-semibold text-ocean-700">地基承载力计算</h3>
+                            <p class="text-sm text-ocean-600 mt-1">Terzaghi承载力公式</p>
+                        </div>
+                        <div class="formula-card bg-ocean-50 border-l-4 border-ocean-500 p-4 rounded cursor-pointer transition-all duration-300" data-formula="settlement">
+                            <h3 class="font-semibold text-ocean-700">沉降计算</h3>
+                            <p class="text-sm text-ocean-600 mt-1">弹性理论沉降公式</p>
+                        </div>
+                        <div class="formula-card bg-ocean-50 border-l-4 border-ocean-500 p-4 rounded cursor-pointer transition-all duration-300" data-formula="wave">
+                            <h3 class="font-semibold text-ocean-700">波浪荷载计算</h3>
+                            <p class="text-sm text-ocean-600 mt-1">Morison方程</p>
+                        </div>
+                        <div class="formula-card bg-ocean-50 border-l-4 border-ocean-500 p-4 rounded cursor-pointer transition-all duration-300" data-formula="slope">
+                            <h3 class="font-semibold text-ocean-700">边坡稳定性</h3>
+                            <p class="text-sm text-ocean-600 mt-1">瑞典圆弧法</p>
+                        </div>
+                        
+                        <!-- 锚固件承载力计算 - 下拉菜单 -->
+                        <div class="relative">
+                            <div id="anchorDropdownBtn" class="formula-card bg-ocean-50 border-l-4 border-ocean-500 p-4 rounded cursor-pointer transition-all duration-300 flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-ocean-700">锚固件分析计算</h3>
+                                    <p class="text-sm text-ocean-600 mt-1">6种锚固件类型</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-ocean-500 transition-transform duration-300" id="dropdownIcon"></i>
+                            </div>
+                            <!-- 下拉菜单内容 -->
+                            <div id="anchorDropdownMenu" class="hidden absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-lg z-10 overflow-hidden">
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200 border-b border-ocean-100" data-anchor="gravity">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-anchor text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">重力锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">自重提供抗拔力</p>
+                                </div>
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200 border-b border-ocean-100" data-anchor="suction">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-fan text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">吸力锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">负压沉贯安装</p>
+                                </div>
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200 border-b border-ocean-100" data-anchor="torpedo">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-rocket text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">鱼雷锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">高速贯入安装</p>
+                                </div>
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200 border-b border-ocean-100" data-anchor="plate">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-square text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">板锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">拖曳埋入式板锚</p>
+                                </div>
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200 border-b border-ocean-100" data-anchor="drag">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-arrow-right text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">拖曳锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">深海嵌入式拖曳锚</p>
+                                </div>
+                                <div class="anchor-menu-item p-3 hover:bg-ocean-50 cursor-pointer transition-colors duration-200" data-anchor="pile">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-charging-station text-ocean-600 w-6"></i>
+                                        <span class="font-medium text-ocean-700">桩锚</span>
+                                    </div>
+                                    <p class="text-xs text-ocean-500 mt-1 ml-6">桩基础式锚固</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间参数输入区 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-ocean-800 flex items-center">
+                        <i class="fas fa-sliders-h mr-2"></i>参数输入
+                    </h2>
+                    <div class="flex space-x-3">
+                        <button id="calculateBtn" class="bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-2 px-5 rounded-lg transition-all duration-300 shadow-md flex items-center space-x-2">
+                            <i class="fas fa-bolt"></i>
+                            <span>计算</span>
+                        </button>
+                        <button id="resetBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-lg transition-all duration-300 shadow-md flex items-center space-x-2">
+                            <i class="fas fa-undo-alt"></i>
+                            <span>重置</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="parameterForm" class="space-y-4">
+                    <div class="text-center py-10 text-ocean-400">
+                        <i class="fas fa-hand-point-left text-3xl mb-3"></i>
+                        <p>请从左侧选择计算公式</p>
+                    </div>
+                </div>
+                <!-- 移除原来底部的计算按钮 -->
+            </div>
+
+            <!-- 右侧结果展示区 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 h-full flex flex-col">
+                <!-- ========== 新增：模块信息展示区（可折叠） ========== -->
+                <div id="moduleInfoArea" class="mb-4 border border-ocean-200 rounded-lg overflow-hidden">
+                    <!-- 信息区头部：标题 + 折叠按钮 -->
+                    <div class="flex items-center justify-between bg-ocean-100 px-4 py-2 cursor-pointer hover:bg-ocean-200 transition-colors duration-200" id="moduleInfoToggle">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-info-circle text-ocean-600"></i>
+                            <h3 class="font-bold text-ocean-700">模块信息</h3>
+                            <span class="text-xs text-ocean-500 bg-ocean-200 px-2 py-0.5 rounded-full" id="moduleNameBadge">未选择</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-chevron-up text-ocean-500 transition-transform duration-300" id="moduleInfoIcon"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 信息区主体内容（可折叠） -->
+                    <div id="moduleInfoContent" class="p-4 bg-white transition-all duration-300">
+                        <!-- 内容占位：未开发提示 -->
+                        <div id="moduleInfoPlaceholder" class="text-center py-8 text-ocean-400">
+                            <i class="fas fa-code-branch text-3xl mb-2"></i>
+                            <p>该模块还未开发信息展示功能</p>
+                            <p class="text-sm mt-1">待补充：规范来源、计算公式说明、原理示意图等</p>
+                        </div>
+                        
+                        <!-- 动态内容容器（后续填充用） -->
+                        <div id="moduleInfoDynamic" class="hidden"></div>
+                    </div>
+                </div>
+                <!-- ========== 信息展示区结束 ========== -->
+
+                <h2 class="text-xl font-bold text-ocean-800 mb-4 flex items-center"> 
+                    <i class="fas fa-chart-line mr-2"></i> 计算结果 
+                </h2>
+
+                <!-- 计算结果展示区 -->
+                <div id="resultSection" class="flex-1">
+                    <div class="text-center py-10 text-ocean-400"> 
+                        <i class="fas fa-calculator text-3xl mb-3"></i> 
+                        <p>计算结果将显示在这里</p> 
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="ocean-bg text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 海上风电基础分析软件 | 专业服务于海洋工程领域</p>
+            <p class="text-ocean-200 text-sm mt-2">基于最新行业规范和工程实践经验</p>
+        </div>
+    </footer>
+
+    <!-- 自定义脚本 -->
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>
