@@ -1,6 +1,6 @@
 /**
- * @filepath: js/Anchor/torpedoAnchor/renderer.js
- * @description: 鱼雷锚专用渲染器，负责鱼雷锚计算结果的详细展示，集成校验警告信息展示
+ * @filepath: js/Anchor/torpedoAnchor/vertical-capacity/renderer.js
+ * @description: 鱼雷锚竖向承载力模块专用渲染器，负责鱼雷锚计算结果的详细展示，集成校验警告信息展示
  */
 
 import { 

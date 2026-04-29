@@ -1,6 +1,6 @@
 /**
- * @filepath: js/Anchor/torpedoAnchor/infoContent.js
- * @description: 鱼雷锚模块信息展示内容
+ * @filepath: js/Anchor/torpedoAnchor/vertical-capacity/infoContent.js
+ * @description: 鱼雷锚竖向承载力模块信息展示内容
  */
 
 export function getInfoContent() {

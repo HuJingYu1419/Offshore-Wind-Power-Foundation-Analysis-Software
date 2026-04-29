@@ -1,6 +1,6 @@
 /**
- * @filepath: js/Anchor/torpedoAnchor/validator.js
- * @description: 鱼雷锚参数校验规则
+ * @filepath: js/Anchor/torpedoAnchor/vertical-capacity/validator.js
+ * @description: 鱼雷锚竖向承载力模块参数校验规则
  */
 
 import { ValidationResult, baseRules } from '../shared/baseValidator.js';

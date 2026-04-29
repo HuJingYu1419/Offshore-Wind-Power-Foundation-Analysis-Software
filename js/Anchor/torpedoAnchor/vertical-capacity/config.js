@@ -1,10 +1,10 @@
 /**
- * @filepath: js/Anchor/torpedoAnchor/config.js
- * @description: 鱼雷锚模块参数配置
+ * @filepath: js/Anchor/torpedoAnchor/vertical-capacity/config.js
+ * @description: 鱼雷锚 - 竖向承载力模块参数配置
  */
 
-export const id = 'torpedo';
-export const name = '鱼雷锚承载力计算';
+export const id = 'vertical-capacity';  
+export const name = '鱼雷锚竖向承载力计算';  
 export const description = '基于Randolph & Murphy (R&M)公式，支持短期/长期两种计算模式';
 
 export const parameters = [

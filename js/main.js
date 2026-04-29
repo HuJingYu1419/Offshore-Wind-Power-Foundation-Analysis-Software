@@ -25,6 +25,13 @@ import { getSubScenarioList, setCurrentScenario, getCurrentSubModule, defaultSce
 let currentSuctionScenario = defaultScenario;
 let subScenarioSelectorHtml = '';
 
+import { 
+    getSubScenarioList as getTorpedoSubScenarioList, 
+    setCurrentScenario as setTorpedoCurrentScenario, 
+    getCurrentSubModule as getTorpedoCurrentSubModule,
+    defaultScenario as torpedoDefaultScenario 
+} from './Anchor/torpedoAnchor/index.js';
+
 /**
  * 生成吸力锚子场景切换器的HTML
  */
@@ -63,6 +70,46 @@ function bindSubScenarioButtons() {
                 setCurrentScenario(scenarioId);
                 // 重新加载当前模块（吸力锚）
                 selectModule('suction');
+            }
+        });
+    });
+}
+
+// 鱼雷锚子场景相关变量
+let currentTorpedoScenario = torpedoDefaultScenario;
+
+function generateTorpedoSubScenarioSelector() {
+    const scenarios = getTorpedoSubScenarioList();
+    return `
+        <div class="mb-4 bg-ocean-50 rounded-lg p-3">
+            <div class="text-sm font-medium text-ocean-700 mb-2">⚓ 子场景选择（鱼雷锚）</div>
+            <div class="flex flex-wrap gap-2">
+                ${scenarios.map(scenario => `
+                    <button 
+                        class="torpedo-sub-scenario-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                            ${currentTorpedoScenario === scenario.id 
+                                ? 'bg-ocean-600 text-white shadow-md' 
+                                : 'bg-white text-ocean-600 border border-ocean-300 hover:bg-ocean-50'}"
+                        data-torpedo-scenario="${scenario.id}"
+                    >
+                        ${scenario.icon || '📌'} ${scenario.name}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function bindTorpedoSubScenarioButtons() {
+    const btns = document.querySelectorAll('.torpedo-sub-scenario-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const scenarioId = btn.getAttribute('data-torpedo-scenario');
+            if (scenarioId && scenarioId !== currentTorpedoScenario) {
+                currentTorpedoScenario = scenarioId;
+                setTorpedoCurrentScenario(scenarioId);
+                // 重新加载鱼雷锚模块
+                selectModule('torpedo');
             }
         });
     });
@@ -186,6 +233,35 @@ function selectModule(moduleId) {
         
         // 绑定子场景切换按钮
         bindSubScenarioButtons();
+        
+        // 更新信息展示区
+        updateModuleInfo(currentModule);
+        
+        // 清空输出区
+        clearResultSection();
+        
+        // 关闭下拉菜单
+        closeDropdown();
+        return;
+    }
+
+    // 特殊处理：鱼雷锚也需要子场景切换器
+    if (moduleId === 'torpedo') {
+        // 确保鱼雷锚使用正确的子场景
+        const torpedoSubModule = getCurrentSubModule();  // 需要从 torpedoAnchor/index.js 导入
+        currentModule = torpedoSubModule;
+        
+        // 生成表单
+        let formHtml = generateGroupedForm(currentModule);
+        
+        // 在表单顶部插入子场景切换器
+        const selectorHtml = generateTorpedoSubScenarioSelector();  // 类似吸力锚的实现
+        formHtml = selectorHtml + formHtml;
+        
+        document.getElementById('parameterForm').innerHTML = formHtml;
+        
+        // 绑定子场景切换按钮
+        bindTorpedoSubScenarioButtons();
         
         // 更新信息展示区
         updateModuleInfo(currentModule);

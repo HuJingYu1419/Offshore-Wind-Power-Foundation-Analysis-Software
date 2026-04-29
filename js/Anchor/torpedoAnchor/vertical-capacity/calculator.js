@@ -1,6 +1,6 @@
 /**
- * @filepath: js/Anchor/torpedoAnchor/calculator.js
- * @description: 鱼雷锚承载力计算逻辑
+ * @filepath: js/Anchor/torpedoAnchor/vertical-capacity/calculator.js
+ * @description: 鱼雷锚竖向承载力计算逻辑
  * 基于论文《鱼雷锚在静荷载与循环荷载下的承载特性数值分析_成思佳.pdf》
  * 采用Randolph & Murphy (R&M) 公式计算侧摩阻力系数α
  */
