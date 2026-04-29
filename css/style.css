@@ -79,30 +79,64 @@
     transform: translateX(5px);
 }
 
-/* ========== 新增：参数网格布局 ========== */
+/* ========== 参数网格布局 - 一行两个 ========== */
 .param-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* 改为固定两列布局，每列最小宽度120px，自动调整 */
+    grid-template-columns: repeat(2, minmax(80px, 1fr));
     gap: 0.75rem;
 }
 
 /* 确保参数输入卡片在网格内正常显示 */
 .param-grid .parameter-input {
     margin-bottom: 0;
+    min-width: 0;  /* 允许内容缩小 */
 }
 
-/* 平板端: 2列 */
-@media (max-width: 1024px) {
+/* 当屏幕较窄时，改为自适应两列但允许收缩 */
+@media (max-width: 1024px) and (min-width: 768px) {
+    .param-grid {
+        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+/* 当屏幕较窄但仍可并排时 */
+@media (max-width: 768px) and (min-width: 560px) {
     .param-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
     }
 }
 
-/* 手机端: 1列 */
-@media (max-width: 640px) {
+/* 手机端: 单列 */
+@media (max-width: 400px) {
     .param-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
     }
+}
+
+/* ========== 参数输入卡片紧凑样式优化 ========== */
+.parameter-input {
+    padding: 0.5rem !important;  /* 减少内边距 */
+    font-size: 0.875rem;
+}
+
+.parameter-input label {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.parameter-input input,
+.parameter-input select {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.parameter-input .text-xs {
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
 }
 
 /* ========== 新增：左侧导航栏固定定位 ========== */
@@ -158,30 +192,52 @@
 }
 
 
-/* ========== 新增：三列精确比例控制 ========== */
-/* 桌面端：精确控制三列比例为 10% / 40% / 50% */
+/* 替换原有的桌面端布局样式 */
+
+/* ========== 三列布局：左侧固定宽度，右侧自适应按比例分配 ========== */
 @media (min-width: 1024px) {
     .main-grid-container {
         display: grid;
-        grid-template-columns: 10% 40% 50%;
-        gap: 1.5rem;
-        /* 动态边距：最小1rem，最大3rem，随视口宽度增长 */
+        /* 核心：左侧固定 120px，剩余宽度按比例分配 40% 给中间，60% 给右侧 */
+        grid-template-columns: 170px minmax(0, 0.4fr) minmax(0, 0.6fr);
+        gap: 1rem;
         padding-left: clamp(1rem, 3vw, 3rem);
         padding-right: clamp(1rem, 3vw, 3rem);
-        /* 限制最大宽度，避免内容过度拉伸 */
-        /*max-width: 1600px;*/
         margin: 0 auto;
     }
 }
 
-/* 平板端：自动适配为两列布局（1024px以下，640px以上） */
+/* 左侧导航栏固定布局（不会因窗口变化而改变宽度） */
+.formula-sidebar {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    /* 固定宽度继承父级，父级已经是固定260px */
+    width: 100%;
+    min-width: 0;
+}
+
+/* 中间输入参数区 - 占剩余宽度的40% */
+.main-grid-container > :nth-child(2) {
+    min-width: 0;  /* 防止内容溢出 */
+    overflow: hidden;
+}
+
+/* 右侧输出结果区 - 占剩余宽度的60% */
+.main-grid-container > :nth-child(3) {
+    min-width: 0;  /* 防止内容溢出 */
+    overflow: hidden;
+}
+
+/* 平板端（1024px以下，640px以上）：左侧固定宽度不变，右侧区域占满第二行 */
 @media (max-width: 1024px) and (min-width: 640px) {
     .main-grid-container {
         display: grid;
-        grid-template-columns: 1fr 1.5fr;
+        grid-template-columns: 170px 1fr;  /* 左侧固定120px */
         gap: 1.5rem;
         padding: 0 1rem;
-        max-width: 100%;
         margin: 0 auto;
     }
     /* 右侧结果区占满第二行 */
@@ -191,15 +247,53 @@
 }
 
 /* 手机端：单列布局 */
-@media (max-width: 640px) {
+@media (max-width: 300px) {
     .main-grid-container {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1rem;
         padding: 0 1rem;
-        max-width: 100%;
         margin: 0 auto;
     }
+}
+
+/* 当屏幕较窄但仍在1024px以上时，保持左侧固定150px，缩小右侧列最小宽度 */
+@media (min-width: 1024px) and (max-width: 1200px) {
+    .main-grid-container {
+        grid-template-columns: 150px minmax(0, 0.4fr) minmax(0, 0.6fr);
+        gap: 1rem;
+    }
+}
+
+/* 公式卡片内容优化：防止换行变形 */
+.formula-card h3 {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.formula-card p {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* 下拉菜单内容优化 */
+.anchor-menu-item span {
+    font-size: 0.85rem;
+    word-break: break-word;
+}
+
+.anchor-menu-item p {
+    font-size: 0.7rem;
+    word-break: break-word;
+    margin-left: 1.75rem;
+}
+
+/* 确保所有容器正确处理溢出 */
+.bg-white.rounded-xl.shadow-lg {
+    min-width: 0;
+    overflow-x: auto;  /* 如果内容过宽则出现横向滚动条 */
 }
 
 /* ========== 模块信息区折叠动画 ========== */

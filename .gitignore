@@ -27,5 +27,6 @@ package-lock.json
 package.json
 vite.config.js
 __pycache__
-tauri_app/
+src-tauri/
+src/
 public/

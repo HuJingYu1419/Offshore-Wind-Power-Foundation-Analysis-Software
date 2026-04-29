@@ -8,8 +8,8 @@ import {
     renderDetailsCard, 
     renderGroupRow,
     renderParameterSummary 
-} from '../shared/baseRenderer.js';
-import { renderValidationAlert } from '../shared/baseRenderer.js';
+} from '../../shared/baseRenderer.js';
+import { renderValidationAlert } from '../../shared/baseRenderer.js';
 
 /**
  * 渲染鱼雷锚计算结果

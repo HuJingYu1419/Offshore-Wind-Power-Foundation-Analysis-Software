@@ -6,6 +6,7 @@
 import { getAnchorModule } from '../Anchor/index.js';
 import { renderValidationAlert, renderParameterSummary, formatNumber } from '../Anchor/shared/baseRenderer.js';
 
+// resultRenderer.js - 修改 renderResult 函数
 export function renderResult(result, formulaModule, params, validation = null) {
     if (!formulaModule || !formulaModule.id) {
         console.warn('renderResult: 无效的模块对象');
@@ -13,9 +14,18 @@ export function renderResult(result, formulaModule, params, validation = null) {
     }
     
     const moduleId = formulaModule.id;
-    const anchorIds = ['gravity', 'torpedo', 'plate', 'pile', 'drag', 'suction'];
+    const anchorParentIds = ['gravity', 'torpedo', 'plate', 'pile', 'drag', 'suction'];
     
-    if (anchorIds.includes(moduleId)) {
+    // 方案一：优先检查模块自身是否有 render 方法
+    if (typeof formulaModule.render === 'function') {
+        const resultHtml = formulaModule.render(result, formulaModule, params, validation);
+        const resultSection = document.getElementById('resultSection');
+        if (resultSection) resultSection.innerHTML = resultHtml;
+        return;
+    }
+    
+    // 兼容旧逻辑：检查是否属于父模块ID
+    if (anchorParentIds.includes(moduleId)) {
         const anchorModule = getAnchorModule(moduleId);
         if (anchorModule && typeof anchorModule.render === 'function') {
             const resultHtml = anchorModule.render(result, formulaModule, params, validation);

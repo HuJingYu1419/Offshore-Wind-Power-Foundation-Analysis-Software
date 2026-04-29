@@ -12,9 +12,19 @@ export function validateModule(formulaModule, params) {
     }
     
     const moduleId = formulaModule.id;
-    const anchorIds = ['gravity', 'torpedo', 'plate', 'pile', 'drag', 'suction'];
+    const anchorParentIds = ['gravity', 'torpedo', 'plate', 'pile', 'drag', 'suction'];
     
-    if (anchorIds.includes(moduleId)) {
+    // 方案一：优先检查模块自身是否有 validate 方法
+    if (typeof formulaModule.validate === 'function') {
+        const result = formulaModule.validate(params);
+        if (result && typeof result.toObject === 'function') {
+            return result.toObject();
+        }
+        return result || { isValid: true, errors: [], warnings: [], infos: [] };
+    }
+    
+    // 兼容旧逻辑：检查是否属于父模块ID
+    if (anchorParentIds.includes(moduleId)) {
         const anchorModule = getAnchorModule(moduleId);
         if (anchorModule && typeof anchorModule.validate === 'function') {
             const result = anchorModule.validate(params);

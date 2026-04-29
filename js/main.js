@@ -19,12 +19,18 @@ import { generateStandardForm, generateGroupedForm, getParameterValues, resetFor
 import { renderResult } from './utils/resultRenderer.js';
 import { validateModule, renderValidationOnly } from './utils/validator.js';
 
-import { getSubScenarioList, setCurrentScenario, getCurrentSubModule, defaultScenario } from './Anchor/index.js';
+// ========== 导入条件管理器 ==========
+import { initConditionManager, cleanupConditionManager, refreshConditionManager } from './utils/conditionManager.js';
 
-// 子场景切换器变量
-let currentSuctionScenario = defaultScenario;
-let subScenarioSelectorHtml = '';
+// ========== 吸力锚子场景相关导入 ==========
+import { 
+    getSubScenarioList as getSuctionSubScenarioList, 
+    setCurrentScenario as setSuctionCurrentScenario, 
+    getCurrentSubModule as getSuctionCurrentSubModule,
+    defaultScenario as suctionDefaultScenario 
+} from './Anchor/suctionAnchor/index.js';
 
+// ========== 鱼雷锚子场景相关导入 ==========
 import { 
     getSubScenarioList as getTorpedoSubScenarioList, 
     setCurrentScenario as setTorpedoCurrentScenario, 
@@ -32,22 +38,28 @@ import {
     defaultScenario as torpedoDefaultScenario 
 } from './Anchor/torpedoAnchor/index.js';
 
+// 吸力锚子场景切换器变量
+let currentSuctionScenario = suctionDefaultScenario;
+
+// 鱼雷锚子场景相关变量
+let currentTorpedoScenario = torpedoDefaultScenario;
+
 /**
  * 生成吸力锚子场景切换器的HTML
  */
-function generateSubScenarioSelector() {
-    const scenarios = getSubScenarioList();
+function generateSuctionSubScenarioSelector() {
+    const scenarios = getSuctionSubScenarioList();
     return `
         <div class="mb-4 bg-ocean-50 rounded-lg p-3">
-            <div class="text-sm font-medium text-ocean-700 mb-2">📌 子场景选择</div>
+            <div class="text-sm font-medium text-ocean-700 mb-2">📌 子场景选择（吸力锚）</div>
             <div class="flex flex-wrap gap-2">
                 ${scenarios.map(scenario => `
                     <button 
-                        class="sub-scenario-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                        class="suction-sub-scenario-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                             ${currentSuctionScenario === scenario.id 
                                 ? 'bg-ocean-600 text-white shadow-md' 
                                 : 'bg-white text-ocean-600 border border-ocean-300 hover:bg-ocean-50'}"
-                        data-scenario="${scenario.id}"
+                        data-suction-scenario="${scenario.id}"
                     >
                         ${scenario.icon || '📌'} ${scenario.name}
                     </button>
@@ -60,24 +72,24 @@ function generateSubScenarioSelector() {
 /**
  * 绑定吸力锚子场景切换事件
  */
-function bindSubScenarioButtons() {
-    const btns = document.querySelectorAll('.sub-scenario-btn');
+function bindSuctionSubScenarioButtons() {
+    const btns = document.querySelectorAll('.suction-sub-scenario-btn');
     btns.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const scenarioId = btn.getAttribute('data-scenario');
+            const scenarioId = btn.getAttribute('data-suction-scenario');
             if (scenarioId && scenarioId !== currentSuctionScenario) {
                 currentSuctionScenario = scenarioId;
-                setCurrentScenario(scenarioId);
-                // 重新加载当前模块（吸力锚）
+                setSuctionCurrentScenario(scenarioId);
+                // 重新加载吸力锚模块
                 selectModule('suction');
             }
         });
     });
 }
 
-// 鱼雷锚子场景相关变量
-let currentTorpedoScenario = torpedoDefaultScenario;
-
+/**
+ * 生成鱼雷锚子场景切换器的HTML
+ */
 function generateTorpedoSubScenarioSelector() {
     const scenarios = getTorpedoSubScenarioList();
     return `
@@ -100,6 +112,9 @@ function generateTorpedoSubScenarioSelector() {
     `;
 }
 
+/**
+ * 绑定鱼雷锚子场景切换事件
+ */
 function bindTorpedoSubScenarioButtons() {
     const btns = document.querySelectorAll('.torpedo-sub-scenario-btn');
     btns.forEach(btn => {
@@ -216,23 +231,34 @@ function selectModule(moduleId) {
         return;
     }
 
-        // 特殊处理：吸力锚需要插入子场景切换器
+    // 获取参数表单容器
+    const parameterForm = document.getElementById('parameterForm');
+    
+    // 清理旧表单的条件管理器监听器
+    if (parameterForm) {
+        cleanupConditionManager(parameterForm);
+    }
+
+    // ========== 特殊处理：吸力锚（需要插入子场景切换器） ==========
     if (moduleId === 'suction') {
         // 确保吸力锚使用正确的子场景
-        const suctionSubModule = getCurrentSubModule();
+        const suctionSubModule = getSuctionCurrentSubModule();
         currentModule = suctionSubModule;
         
         // 生成表单
         let formHtml = generateGroupedForm(currentModule);
         
         // 在表单顶部插入子场景切换器
-        const selectorHtml = generateSubScenarioSelector();
+        const selectorHtml = generateSuctionSubScenarioSelector();
         formHtml = selectorHtml + formHtml;
         
-        document.getElementById('parameterForm').innerHTML = formHtml;
+        parameterForm.innerHTML = formHtml;
+        
+        // ✅ 初始化条件管理器
+        initConditionManager(parameterForm);
         
         // 绑定子场景切换按钮
-        bindSubScenarioButtons();
+        bindSuctionSubScenarioButtons();
         
         // 更新信息展示区
         updateModuleInfo(currentModule);
@@ -245,20 +271,23 @@ function selectModule(moduleId) {
         return;
     }
 
-    // 特殊处理：鱼雷锚也需要子场景切换器
+    // ========== 特殊处理：鱼雷锚（需要插入子场景切换器） ==========
     if (moduleId === 'torpedo') {
-        // 确保鱼雷锚使用正确的子场景
-        const torpedoSubModule = getCurrentSubModule();  // 需要从 torpedoAnchor/index.js 导入
+        // 使用鱼雷锚自己的 getTorpedoCurrentSubModule
+        const torpedoSubModule = getTorpedoCurrentSubModule();
         currentModule = torpedoSubModule;
         
         // 生成表单
         let formHtml = generateGroupedForm(currentModule);
         
         // 在表单顶部插入子场景切换器
-        const selectorHtml = generateTorpedoSubScenarioSelector();  // 类似吸力锚的实现
+        const selectorHtml = generateTorpedoSubScenarioSelector();
         formHtml = selectorHtml + formHtml;
         
-        document.getElementById('parameterForm').innerHTML = formHtml;
+        parameterForm.innerHTML = formHtml;
+        
+        // ✅ 初始化条件管理器
+        initConditionManager(parameterForm);
         
         // 绑定子场景切换按钮
         bindTorpedoSubScenarioButtons();
@@ -274,7 +303,7 @@ function selectModule(moduleId) {
         return;
     }
     
-    // 调试输出
+    // ========== 普通模块处理 ==========
     console.log(`已选择模块: ${moduleId}`, currentModule);
     
     let formHtml;
@@ -286,10 +315,10 @@ function selectModule(moduleId) {
         formHtml = generateStandardForm(currentModule);
     }
     
-    const parameterForm = document.getElementById('parameterForm');
-    if (parameterForm) {
-        parameterForm.innerHTML = formHtml;
-    }
+    parameterForm.innerHTML = formHtml;
+    
+    // ✅ 初始化条件管理器
+    initConditionManager(parameterForm);
     
     // 更新模块信息展示区
     updateModuleInfo(currentModule);

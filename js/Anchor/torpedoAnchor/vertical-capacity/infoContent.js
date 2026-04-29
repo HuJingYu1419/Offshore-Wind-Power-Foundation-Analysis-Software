@@ -57,6 +57,47 @@ export function getInfoContent() {
                     </div>
                 </div>
             </div>
+
+            <div class="module-info-card">
+                <div class="module-info-title">
+                    <i class="fas fa-draw-polygon"></i>
+                    <span>几何信息示意图</span>
+                </div>
+                <div class="module-info-text">
+                    <p class="text-sm text-gray-600 mb-3 text-center">鱼雷锚结构尺寸示意图（含锚身、锚翼、锚尖参数标注）</p>
+                    <div class="flex justify-center">
+                        <div class="flex justify-center w-full">
+                            <img 
+                                src="/assets/pics/tor_structure.png" 
+                                alt="鱼雷锚结构示意图"
+                                class="rounded-lg border border-gray-200 shadow-sm"
+                                style="max-width: 100%; width: auto; height: auto; max-height: 400px; object-fit: contain; display: block;"
+                                onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f0f9ff\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%230ea5e9\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E');"
+                            >
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">鱼雷锚和土体参数示意图</p>
+                </div>
+            </div>
+
+            <div class="module-info-card">
+                <div class="module-info-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>承载力示意图</span>
+                </div>
+                <div class="module-info-text">
+                    <p class="text-sm text-gray-600 mb-3 text-center">鱼雷锚承载力分量示意图</p>
+                    <div class="flex justify-center">
+                        <img 
+                            src="/assets/pics/tor_force.png" 
+                            alt="鱼雷锚承载力分量示意图"
+                            class="rounded-lg border border-gray-200 shadow-sm"
+                            style="max-width: 100%; width: auto; height: auto; max-height: 500px; object-fit: contain; display: block;"
+                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f0f9ff\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%230ea5e9\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E');"
+                        >
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 }

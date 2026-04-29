@@ -3,7 +3,7 @@
  * @description: 鱼雷锚竖向承载力模块参数校验规则
  */
 
-import { ValidationResult, baseRules } from '../shared/baseValidator.js';
+import { ValidationResult, baseRules } from '../../shared/baseValidator.js';
 
 export function validate(params) {
     const result = new ValidationResult();
