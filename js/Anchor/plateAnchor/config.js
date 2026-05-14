@@ -12,7 +12,7 @@ export const parameters = [
     // ========== 计算模式 ==========
     {
         id: "shape",
-        name: "锚板形状",
+        name: "形状 (锚板形状)",
         unit: "",
         default: "square",
         category: "mode",
@@ -24,18 +24,18 @@ export const parameters = [
     // ========== 几何参数 ==========
     {
         id: "width",
-        name: "特征尺寸 B/D",
+        name: "B/D (特征尺寸)",
         unit: "m",
         default: 0.5,
         category: "geometry",
         min: 0.05,
         max: 5.0,
         step: 0.05,
-        note: "方形锚边长 / 圆形锚直径 / 矩形锚短边"
+        note: "B—方形锚边长 / D—圆形锚直径 / B—矩形锚短边"
     },
     {
         id: "length",
-        name: "矩形锚长边 L",
+        name: "L (矩形锚长边)",
         unit: "m",
         default: 1.0,
         category: "geometry",
@@ -47,50 +47,50 @@ export const parameters = [
     },
     {
         id: "embedment_depth",
-        name: "锚板埋深 H",
+        name: "H (锚板埋深)",
         unit: "m",
         default: 2.5,
         category: "geometry",
         min: 0.2,
         max: 20.0,
         step: 0.1,
-        note: "从泥面到锚板顶面的深度"
+        note: "H—从泥面到锚板顶面的深度"
     },
     
     // ========== 土体参数 ==========
     {
         id: "undrained_strength",
-        name: "不排水抗剪强度 s_u",
+        name: "s_u (不排水抗剪强度)",
         unit: "kPa",
         default: 50.0,
         category: "soil",
         min: 5,
         max: 200,
         step: 1,
-        note: "均质黏土常数强度值"
+        note: "s_u—均质黏土常数强度值"
     },
     {
         id: "unit_weight",
-        name: "土体浮容重 γ'",
+        name: "γ' (土体浮容重)",
         unit: "kN/m³",
         default: 8.0,
         category: "soil",
         min: 3,
         max: 12,
         step: 0.5,
-        note: "水下有效重度"
+        note: "γ'—水下有效重度"
     },
     
     // ========== 折减系数 ==========
     {
         id: "reduction_factor",
-        name: "土壤扰动折减系数 η",
+        name: "η (土壤扰动折减系数)",
         unit: "",
         default: 0.75,
         category: "coefficient",
         min: 0.5,
         max: 1.0,
         step: 0.05,
-        note: "考虑安装扰动影响，DNV规范建议0.75"
+        note: "η—考虑安装扰动影响，DNV规范建议0.75"
     }
 ];

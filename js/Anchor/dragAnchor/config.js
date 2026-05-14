@@ -25,7 +25,7 @@ export const parameters = [
     { 
         id: "anchor_type", name: "预定义锚板规格", unit: "", default: "medium", category: "anchor",
         options: ["small", "medium", "large"],
-        optionsLabel: ["小锚板 As (20cm×20cm)", "中锚板 Am (25cm×25cm)", "大锚板 Al (30cm×30cm)"],
+        optionsLabel: ["小锚板 A_s (20cm×20cm)", "中锚板 A_m (25cm×25cm)", "大锚板 A_l (30cm×30cm)"],
         condition: { use_preset: true },
         note: "参考论文表4-1"
     },
@@ -33,99 +33,99 @@ export const parameters = [
         id: "chain_type", name: "拖缆类型", unit: "", default: "wire", category: "mode",
         options: ["wire", "chain"],
         optionsLabel: ["钢索 (b = d)", "钢链 (b = 2.5d)"],
-        note: "影响有效承载宽度"
+        note: "b—有效宽度，影响有效承载宽度"
     },
     
     // ========== 几何参数 ==========
     { 
-        id: "c_deg", name: "系缆夹角 c", unit: "°", default: 30, category: "geometry",
+        id: "c_deg", name: "c (系缆夹角)", unit: "°", default: 30, category: "geometry",
         min: 0, max: 90, step: 1,
-        note: "拖缆与锚板板面夹角，典型值20°-40°"
+        note: "c—拖缆与锚板板面夹角，典型值20°-40°"
     },
     { 
-        id: "theta_m_deg", name: "锚板抬平角 θm", unit: "°", default: 0, category: "geometry",
+        id: "theta_m_deg", name: "θ_m (锚板抬平角)", unit: "°", default: 0, category: "geometry",
         min: 0, max: 30, step: 1,
-        note: "极限嵌入状态下通常取0°"
+        note: "θ_m—极限嵌入状态下通常取0°"
     },
     { 
-        id: "d", name: "拖缆直径", unit: "m", default: 0.006, category: "geometry",
+        id: "d", name: "d (拖缆直径)", unit: "m", default: 0.006, category: "geometry",
         min: 0.001, max: 0.05, step: 0.001,
-        note: "典型值6mm-20mm"
+        note: "d—典型值6mm-20mm"
     },
     
     // ========== 自定义锚板参数 ==========
     { 
-        id: "custom_length", name: "锚板长度", unit: "m", default: 0.250, category: "anchor",
+        id: "custom_length", name: "L (锚板长度)", unit: "m", default: 0.250, category: "anchor",
         condition: { use_preset: false }, min: 0.05, max: 1.0, step: 0.01,
-        note: "锚板纵向尺寸"
+        note: "L—锚板纵向尺寸"
     },
     { 
-        id: "custom_width", name: "锚板宽度", unit: "m", default: 0.250, category: "anchor",
+        id: "custom_width", name: "B (锚板宽度)", unit: "m", default: 0.250, category: "anchor",
         condition: { use_preset: false }, min: 0.05, max: 1.0, step: 0.01,
-        note: "锚板横向尺寸"
+        note: "B—锚板横向尺寸"
     },
     { 
-        id: "custom_thickness", name: "锚板厚度", unit: "m", default: 0.014, category: "anchor",
+        id: "custom_thickness", name: "t (锚板厚度)", unit: "m", default: 0.014, category: "anchor",
         condition: { use_preset: false }, min: 0.005, max: 0.05, step: 0.001,
-        note: "锚板厚度"
+        note: "t—锚板厚度"
     },
     { 
-        id: "custom_A_bearing", name: "端阻力有效承载面积 A_bearing", unit: "m²", default: 3500e-6, category: "anchor",
+        id: "custom_A_bearing", name: "A_b (端阻力有效承载面积)", unit: "m²", default: 3500e-6, category: "anchor",
         condition: { use_preset: false }, min: 1e-6, max: 0.01, step: 1e-6,
-        note: "对应表4-1中 A_lb"
+        note: "A_b—对应表4-1中 A_lb"
     },
     { 
-        id: "custom_A_shearing", name: "剪切面积 A_shearing", unit: "m²", default: 132000e-6, category: "anchor",
+        id: "custom_A_shearing", name: "A_s (剪切面积)", unit: "m²", default: 132000e-6, category: "anchor",
         condition: { use_preset: false }, min: 1e-5, max: 0.001, step: 1e-6,
-        note: "对应表4-1中 A_fs"
+        note: "A_s—对应表4-1中 A_fs"
     },
     { 
-        id: "custom_O", name: "系缆点至重心距离 O", unit: "m", default: 0.300, category: "anchor",
+        id: "custom_O", name: "O (系缆点至重心距离)", unit: "m", default: 0.300, category: "anchor",
         condition: { use_preset: false }, min: 0.1, max: 0.5, step: 0.01,
-        note: "系缆点至锚板重心的距离"
+        note: "O—系缆点至锚板重心的距离"
     },
     
     // ========== 饱和粘土参数 ==========
     { 
-        id: "su0", name: "泥面不排水抗剪强度", unit: "kPa", default: 10, category: "soil",
+        id: "su0", name: "s_u₀ (泥面不排水抗剪强度)", unit: "kPa", default: 10, category: "soil",
         condition: { soil_type: "clay" }, min: 0, max: 100, step: 0.5,
-        note: "表面土体强度"
+        note: "s_u₀—表面土体强度"
     },
     { 
-        id: "k", name: "抗剪强度梯度", unit: "kPa/m", default: 1.5, category: "soil",
+        id: "k", name: "k (抗剪强度梯度)", unit: "kPa/m", default: 1.5, category: "soil",
         condition: { soil_type: "clay" }, min: 0, max: 10, step: 0.1,
-        note: "强度随深度增长率"
+        note: "k—强度随深度增长率"
     },
     { 
-        id: "alpha", name: "粘滞系数 α", unit: "", default: 0.5, category: "coefficient",
+        id: "alpha", name: "α (粘滞系数)", unit: "", default: 0.5, category: "coefficient",
         condition: { soil_type: "clay" }, min: 0.2, max: 0.8, step: 0.05,
-        note: "典型值0.2-0.8"
+        note: "α—典型值0.2-0.8"
     },
     { 
-        id: "Nc", name: "承载力系数 Nc", unit: "", default: 7.6, category: "coefficient",
+        id: "Nc", name: "N_c (承载力系数)", unit: "", default: 7.6, category: "coefficient",
         condition: { soil_type: "clay" }, min: 5, max: 12, step: 0.1,
-        note: "深埋时取7.6"
+        note: "N_c—深埋时取7.6"
     },
     
     // ========== 饱和砂土参数 ==========
     { 
-        id: "gamma", name: "土体浮容重", unit: "kN/m³", default: 10.0, category: "soil",
+        id: "gamma", name: "γ' (土体浮容重)", unit: "kN/m³", default: 10.0, category: "soil",
         condition: { soil_type: "sand" }, min: 3, max: 12, step: 0.1,
-        note: "水下有效重度"
+        note: "γ'—水下有效重度"
     },
     { 
-        id: "phi", name: "内摩擦角 φ", unit: "°", default: 25, category: "soil",
+        id: "phi", name: "φ (内摩擦角)", unit: "°", default: 25, category: "soil",
         condition: { soil_type: "sand" }, min: 15, max: 45, step: 1,
-        note: "砂土抗剪强度参数"
+        note: "φ—砂土抗剪强度参数"
     },
     { 
-        id: "delta_fac", name: "摩擦比 tanδ/tanφ", unit: "", default: 0.5, category: "soil",
+        id: "delta_fac", name: "tanδ/tanφ (摩擦比)", unit: "", default: 0.5, category: "soil",
         condition: { soil_type: "sand" }, min: 0.3, max: 0.8, step: 0.05,
-        note: "外摩擦角系数，通常取0.5"
+        note: "δ—外摩擦角，通常取δ=0.5φ"
     },
     { 
-        id: "K0", name: "侧压力系数 K0", unit: "", default: 0.5, category: "coefficient",
+        id: "K0", name: "K₀ (侧压力系数)", unit: "", default: 0.5, category: "coefficient",
         condition: { soil_type: "sand" }, min: 0.3, max: 0.7, step: 0.05,
-        note: "静止土压力系数"
+        note: "K₀—静止土压力系数"
     }
 ];

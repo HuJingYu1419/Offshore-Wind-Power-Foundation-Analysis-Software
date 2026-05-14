@@ -17,15 +17,16 @@
 ├── index.html                              # 主入口页面
 │
 ├── css/
-│   └── style.css                           # 全局样式（含响应式布局、固定侧边栏、折叠动画等）
+│   └── style.css                           # 全局样式（响应式布局、固定侧边栏、折叠动画等）
 │
 ├── js/
 │   ├── main.js                             # 主入口模块（模块路由、事件绑定、计算分发）
 │   │
 │   ├── utils/                              # 全局工具函数目录
 │   │   ├── formGenerator.js                # 表单生成器（支持条件显示、分组表单）
-│   │   ├── resultRenderer.js               # 结果渲染主入口（分发器）
-│   │   └── validator.js                    # 校验工具主入口（统一分发）
+│   │   ├── resultRenderer.js               # 结果渲染主入口（分发器）✅ 已修复子场景路由
+        ├── conditionManager.js             # 条件显示工具               
+│   │   └── validator.js                    # 校验工具主入口（统一分发）✅ 已修复子场景路由
 │   │
 │   ├── Anchor/                             # 锚固件模块根目录
 │   │   │
@@ -33,44 +34,61 @@
 │   │   │
 │   │   ├── shared/                         # 共享资源（所有锚固件共用）
 │   │   │   ├── baseValidator.js            # 校验基类（ValidationResult + 通用规则）
-│   │   │   └── baseRenderer.js             # 渲染基类（通用渲染函数）
+│   │   │   └── baseRenderer.js             # 渲染基类（通用渲染函数、格式化、参数摘要）
 │   │   │
-│   │   ├── gravityAnchor/                  # 重力锚模块
-│   │   │   ├── config.js                   # 参数配置
-│   │   │   ├── calculator.js               # 计算逻辑
-│   │   │   ├── validator.js                # 校验规则
-│   │   │   ├── renderer.js                 # 结果渲染
-│   │   │   └── infoContent.js              # 模块信息展示
-│   │   │
-│   │   ├── torpedoAnchor/                  # 鱼雷锚模块
+│   │   ├── gravityAnchor/                  # ✅ 重力锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
 │   │   │   ├── renderer.js
 │   │   │   └── infoContent.js
 │   │   │
-│   │   ├── plateAnchor/                    # 板锚模块
+│   │   ├── torpedoAnchor/                  # ✅ 鱼雷锚模块（已重构为子场景架构）
+│   │   │   ├── index.js                    # 模块入口 + 子场景切换逻辑
+│   │   │   │
+│   │   │   ├── vertical-capacity/          # 子场景1：竖向承载力计算
+│   │   │   │   ├── config.js               # 参数配置（id: vertical-capacity）
+│   │   │   │   ├── calculator.js           # 计算逻辑（Randolph & Murphy公式）
+│   │   │   │   ├── validator.js            # 校验规则
+│   │   │   │   ├── renderer.js             # 结果渲染
+│   │   │   │   └── infoContent.js          # 模块信息展示
+│   │   │   │
+│   │   │   ├── horizontal-capacity/        # 子场景2：水平承载力计算（占位）
+│   │   │   │   ├── config.js
+│   │   │   │   ├── calculator.js
+│   │   │   │   ├── validator.js
+│   │   │   │   ├── renderer.js
+│   │   │   │   └── infoContent.js
+│   │   │   │
+│   │   │   └── penetration/                # 子场景3：安装贯入深度预测（占位）
+│   │   │       ├── config.js
+│   │   │       ├── calculator.js
+│   │   │       ├── validator.js
+│   │   │       ├── renderer.js
+│   │   │       └── infoContent.js
+│   │   │
+│   │   ├── plateAnchor/                    # ✅ 板锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
 │   │   │   ├── renderer.js
 │   │   │   └── infoContent.js
 │   │   │
-│   │   ├── pileAnchor/                     # 桩锚模块
+│   │   ├── pileAnchor/                     # ✅ 桩锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
 │   │   │   ├── renderer.js
 │   │   │   └── infoContent.js
 │   │   │
-│   │   ├── dragAnchor/                     # 拖曳锚模块
+│   │   ├── dragAnchor/                     # ✅ 拖曳锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
 │   │   │   ├── renderer.js
 │   │   │   └── infoContent.js
 │   │   │
-│   │   └── suctionAnchor/                  # 吸力锚模块（多场景架构）
+│   │   └── suctionAnchor/                  # ✅ 吸力锚模块（子场景架构）
 │   │       ├── index.js                    # 模块入口 + 子场景切换逻辑
 │   │       ├── shared/                     # 吸力锚内部共享
 │   │       │   └── suctionUtils.js
@@ -94,12 +112,19 @@
 │   │           └── infoContent.js
 │   │
 │   ├── bearing/                            # 地基承载力模块
+│   │   └── bearing.js
+│   │
 │   ├── settlement/                         # 沉降计算模块
+│   │   └── settlement.js
+│   │
 │   ├── wave/                               # 波浪荷载模块
+│   │   └── wave.js
+│   │
 │   └── slope/                              # 边坡稳定模块
+│       └── slope.js
 │
 └── assets/                                 # 静态资源目录
-    ├── algorighm/                          # python算法实现代码管理
+    ├── algorighm/                          # 算法实现代码参考
     ├── docs/                               # 项目说明文档
     └── pics/                               # 原理图、图标等图片
 ```
@@ -134,3 +159,11 @@
 + 关于吸力锚：经评估，吸力锚模块的内容比较多，我们认为需要将吸力锚一个模块分为3个子场景来管理，目前正在验证脚本中，但软件架构已搭建和占位。
 + 重构了源代码的目录结构和管理方式，现在各个模块的模块化和标准化程度更高，之后可以更容易地分工和管理各个模块的开发了。
 + 已构建github仓库，便于后续团队参与协助开发和代码迭代管理。
+
+
+### 2026.5.14
+（1）信息展示区内容统一：1、理论来源，列出采用的规范，文献等，其中文献要以参考文献的格式呈现，建议用国标（可在知网查到）。2、核心数学公式（仅列出核心部分，不需要所有细节公式），建议统一风格。3、锚固件结构或原理图。4、其他内容
+
+（2）输入参数区：所有的参数都要同时有符号和中文说明
+
+（3）修正了重力锚的计算逻辑问题
