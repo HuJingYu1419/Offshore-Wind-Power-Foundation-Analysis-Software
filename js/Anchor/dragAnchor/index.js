@@ -6,5 +6,5 @@
 export { id, name, description, parameters } from './config.js';
 export { calculate } from './calculator.js';
 export { validate } from './validator.js';
-export { render } from './renderer.js';
+export { render, renderChart } from './renderer.js';
 export { getInfoContent } from './infoContent.js';

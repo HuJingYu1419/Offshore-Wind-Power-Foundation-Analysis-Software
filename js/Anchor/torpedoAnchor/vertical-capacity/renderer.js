@@ -10,6 +10,7 @@ import {
     renderParameterSummary 
 } from '../../shared/baseRenderer.js';
 import { renderValidationAlert } from '../../shared/baseRenderer.js';
+import { generateChartConfig, shouldShowChart } from './chart.js';
 
 /**
  * 渲染鱼雷锚计算结果
@@ -175,7 +176,17 @@ export function render(result, formulaModule, params, validation = null) {
         </div>
     `;
     
-    // ========== 9. 组合完整结果 ==========
+    // ========== 9. 图表容器（占位） ==========
+    let chartHtml = '';
+    if (shouldShowChart(params, result)) {
+        chartHtml = `
+            <div class="mt-6 pt-4 border-t border-ocean-200">
+                <canvas id="torpedo-vertical-chart" style="max-height: 350px; width: 100%;"></canvas>
+            </div>
+        `;
+    }
+    
+    // ========== 10. 组合完整结果 ==========
     let fullHtml = '';
     
     // 优先显示校验警告/提示（如果有）
@@ -186,6 +197,31 @@ export function render(result, formulaModule, params, validation = null) {
     fullHtml += renderResultHeader(result.text);
     fullHtml += renderDetailsCard('📋 分项计算结果', contentHtml);
     fullHtml += renderParameterSummary(formulaModule, params);
+    fullHtml += chartHtml;  // 图表放在参数摘要之后
     
     return fullHtml;
+}
+
+/**
+ * 渲染图表（在 DOM 更新后调用）
+ * @param {Object} params - 输入参数
+ * @param {Object} result - 计算结果
+ * @param {Function} calculateFn - 计算函数引用
+ */
+export function renderChart(params, result, calculateFn) {
+    if (!shouldShowChart(params, result)) return;
+    
+    const canvas = document.getElementById('torpedo-vertical-chart');
+    if (!canvas) return;
+    
+    // 销毁已有的 Chart 实例（避免重复渲染）
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    // 生成图表配置
+    const config = generateChartConfig(params, result, calculateFn);
+    
+    // 创建新图表
+    canvas.chart = new Chart(canvas, config);
 }

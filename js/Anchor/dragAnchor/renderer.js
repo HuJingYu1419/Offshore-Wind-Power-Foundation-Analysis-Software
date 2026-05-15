@@ -10,6 +10,7 @@ import {
     renderValidationAlert,
     formatNumber
 } from '../shared/baseRenderer.js';
+import { generateChartConfig, shouldShowChart } from './chart.js';
 
 function formatNumberSmart(value) {
     if (value === undefined || value === null) return '—';
@@ -25,29 +26,12 @@ function formatNumberSmart(value) {
 export function render(result, formulaModule, params, validation = null) {
     const details = result.details;
     
-    const soilType = details.soil_type || '—';
-    const anchorName = details.anchor_name || '—';
-    const cDeg = details.c_deg !== undefined ? formatNumberSmart(details.c_deg) : '—';
-    const dMm = details.d_mm !== undefined ? formatNumberSmart(details.d_mm) : '—';
-    const chainType = details.chain_type || '—';
-    
-    const anchorLength = details.anchor_length_m;
-    const anchorWidth = details.anchor_width_m;
-    const anchorThickness = details.anchor_thickness_mm;
-    const ABearing = details.A_bearing_cm2;
-    const AShearing = details.A_shearing_cm2;
-    const O = details.O_mm;
-    
-    const effectiveWidth = details.effective_width_b_m;
-    const deltaZ = details.delta_z_m;
-    const m1 = details.m1;
-    const m2 = details.m2;
-    const T = details.T;
-    const t1 = details.t1;
-    
     const zUedM = details.z_ued_m !== undefined ? formatNumberSmart(details.z_ued_m) : '—';
     const zUedMm = details.z_ued_mm !== undefined ? formatNumberSmart(details.z_ued_mm) : '—';
     const zUedRatio = details.z_ued_ratio !== undefined ? formatNumberSmart(details.z_ued_ratio) : '—';
+    
+    // 获取锚板尺寸用于深度比值判断
+    const anchorLength = details.anchor_length_m;
     
     let depthHintHtml = '';
     if (details.z_ued_m && anchorLength) {
@@ -69,92 +53,101 @@ export function render(result, formulaModule, params, validation = null) {
         }
     }
     
+    // ========== 核心计算结果卡片 ==========
     let contentHtml = `
         <div class="space-y-3">
-            ${depthHintHtml}
-            
+            ${depthHintHtml}        
+            <!-- 分项计算结果 -->
             <div class="bg-ocean-50 p-3 rounded">
-                <div class="font-semibold text-ocean-800 mb-2">📋 输入参数</div>
+                <div class="font-semibold text-ocean-800 mb-2">🔧 分项计算结果</div>
                 <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="text-ocean-600">土体类型:</span> ${soilType}</div>
-                    <div><span class="text-ocean-600">锚板规格:</span> ${anchorName}</div>
-                    <div><span class="text-ocean-600">系缆夹角 c:</span> ${cDeg}°</div>
-                    <div><span class="text-ocean-600">拖缆直径:</span> ${dMm} mm</div>
-                    <div><span class="text-ocean-600">拖缆类型:</span> ${chainType}</div>
-                </div>
-            </div>
-            
-            <div class="bg-ocean-50 p-3 rounded">
-                <div class="font-semibold text-ocean-800 mb-2">📐 锚板几何参数</div>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="text-ocean-600">长度 × 宽度:</span> ${formatNumberSmart(anchorLength)} m × ${formatNumberSmart(anchorWidth)} m</div>
-                    <div><span class="text-ocean-600">厚度:</span> ${formatNumberSmart(anchorThickness)} mm</div>
-                    <div><span class="text-ocean-600">端面积 A<sub>b</sub>:</span> ${formatNumberSmart(ABearing)} cm²</div>
-                    <div><span class="text-ocean-600">剪切面积 A<sub>s</sub>:</span> ${formatNumberSmart(AShearing)} cm²</div>
-                    <div><span class="text-ocean-600">重心距离 O:</span> ${formatNumberSmart(O)} mm</div>
-                </div>
-            </div>
-            
-            <div class="bg-ocean-50 p-3 rounded">
-                <div class="font-semibold text-ocean-800 mb-2">🔧 中间参数</div>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="text-ocean-600">有效宽度 b:</span> ${formatNumberSmart(effectiveWidth)} m</div>
-                    <div><span class="text-ocean-600">Δz:</span> ${formatNumberSmart(deltaZ)} m</div>
-                    <div><span class="text-ocean-600">m₁:</span> ${formatNumberSmart(m1)}</div>
-                    <div><span class="text-ocean-600">m₂:</span> ${formatNumberSmart(m2)}</div>
-                    <div><span class="text-ocean-600">T = m₁·A<sub>b</sub> + m₂·A<sub>s</sub>:</span> ${formatNumberSmart(T)}</div>
-                    <div><span class="text-ocean-600">t₁ = T/(2b):</span> ${formatNumberSmart(t1)}</div>
-                </div>
-            </div>
-    `;
-    
-    if (details.t2 !== undefined) {
-        contentHtml += `
-            <div class="bg-ocean-50 p-3 rounded">
-                <div class="font-semibold text-ocean-800 mb-2">🏜️ 粘土参数</div>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="text-ocean-600">t₂ = s<sub>u0</sub>/k:</span> ${formatNumberSmart(details.t2)}</div>
-                    <div><span class="text-ocean-600">s<sub>u0</sub>:</span> ${formatNumberSmart(details.su0)} kPa</div>
-                    <div><span class="text-ocean-600">k:</span> ${formatNumberSmart(details.k)} kPa/m</div>
-                    <div><span class="text-ocean-600">α:</span> ${formatNumberSmart(details.alpha)}</div>
-                    <div><span class="text-ocean-600">N<sub>c</sub>:</span> ${formatNumberSmart(details.Nc)}</div>
-                </div>
-            </div>
-        `;
-    } else {
-        contentHtml += `
-            <div class="bg-ocean-50 p-3 rounded">
-                <div class="font-semibold text-ocean-800 mb-2">🏖️ 砂土参数</div>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="text-ocean-600">N<sub>q</sub>:</span> ${formatNumberSmart(details.Nq)}</div>
-                    <div><span class="text-ocean-600">tanδ:</span> ${formatNumberSmart(details.tan_delta)}</div>
-                    <div><span class="text-ocean-600">φ:</span> ${formatNumberSmart(details.phi)}°</div>
-                    <div><span class="text-ocean-600">K<sub>0</sub>:</span> ${formatNumberSmart(details.K0)}</div>
-                    <div><span class="text-ocean-600">γ:</span> ${formatNumberSmart(details.gamma)} kN/m³</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    contentHtml += `
-            <div class="bg-ocean-100 p-3 rounded border-l-4 border-ocean-500">
-                <div class="font-semibold text-ocean-800 mb-2">📈 极限嵌入深度计算结果</div>
-                <div class="grid grid-cols-3 gap-2 text-sm">
-                    <div><span class="text-ocean-600">深度 (m):</span> <span class="font-bold text-ocean-700 text-lg">${zUedM}</span> m</div>
-                    <div><span class="text-ocean-600">深度 (mm):</span> <span class="font-bold text-ocean-700">${zUedMm}</span> mm</div>
-                    <div><span class="text-ocean-600">z/L 比值:</span> <span class="font-mono">${zUedRatio}</span></div>
+                    <div><span class="text-ocean-600">有效宽度 b:</span> <span class="font-mono">${formatNumberSmart(details.effective_width_b_m)} m</span></div>
+                    <div><span class="text-ocean-600">Δz:</span> <span class="font-mono">${formatNumberSmart(details.delta_z_m)} m</span></div>
+                    <div><span class="text-ocean-600">m₁:</span> <span class="font-mono">${formatNumberSmart(details.m1)}</span></div>
+                    <div><span class="text-ocean-600">m₂:</span> <span class="font-mono">${formatNumberSmart(details.m2)}</span></div>
+                    <div><span class="text-ocean-600">T = m₁·A<sub>b</sub> + m₂·A<sub>s</sub>:</span> <span class="font-mono">${formatNumberSmart(details.T)}</span></div>
+                    <div><span class="text-ocean-600">t₁ = T/(2b):</span> <span class="font-mono">${formatNumberSmart(details.t1)}</span></div>
                 </div>
             </div>
         </div>
     `;
     
+    // 根据土体类型显示不同的参数卡片
+    if (details.t2 !== undefined) {
+        // 饱和粘土参数
+        contentHtml += `
+            <div class="bg-ocean-50 p-3 rounded">
+                <div class="font-semibold text-ocean-800 mb-2">🏜️ 粘土中间参数</div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><span class="text-ocean-600">t₂ = s<sub>u0</sub>/k:</span> <span class="font-mono">${formatNumberSmart(details.t2)}</span></div>
+                    <div><span class="text-ocean-600">sqrt(内项):</span> <span class="font-mono">${formatNumberSmart(details.sqrt_inner)}</span></div>
+                    <div><span class="text-ocean-600">sqrt(结果):</span> <span class="font-mono">${formatNumberSmart(details.sqrt_term)}</span></div>
+                </div>
+            </div>
+        `;
+    } else if (details.Nq !== undefined) {
+        // 饱和砂土参数
+        contentHtml += `
+            <div class="bg-ocean-50 p-3 rounded">
+                <div class="font-semibold text-ocean-800 mb-2">🏖️ 砂土中间参数</div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><span class="text-ocean-600">N<sub>q</sub>:</span> <span class="font-mono">${formatNumberSmart(details.Nq)}</span></div>
+                    <div><span class="text-ocean-600">tanδ:</span> <span class="font-mono">${formatNumberSmart(details.tan_delta)}</span></div>
+                    <div><span class="text-ocean-600">sqrt(内项):</span> <span class="font-mono">${formatNumberSmart(details.sqrt_inner)}</span></div>
+                    <div><span class="text-ocean-600">sqrt(结果):</span> <span class="font-mono">${formatNumberSmart(details.sqrt_term)}</span></div>
+                </div>
+            </div>
+        `;
+    }
+    
+    contentHtml += `</div>`;
+    
+    // ========== 图表容器（占位） ==========
+    let chartHtml = '';
+    if (shouldShowChart(params, result)) {
+        chartHtml = `
+            <div class="mt-6 pt-4 border-t border-ocean-200">
+                <canvas id="drag-chart" style="max-height: 400px; width: 100%;"></canvas>
+            </div>
+        `;
+    }
+    
+    // ========== 组装完整结果 ==========
     let fullHtml = '';
+    
     if (validation && (validation.warnings?.length > 0 || validation.infos?.length > 0)) {
         fullHtml += renderValidationAlert(validation);
     }
+    
     fullHtml += renderResultHeader(result.text);
-    fullHtml += renderDetailsCard('📊 拖曳锚极限嵌入深度计算详情', contentHtml);
+    fullHtml += renderDetailsCard('📊 拖曳锚极限嵌入深度计算结果', contentHtml);
     fullHtml += renderParameterSummary(formulaModule, params);
+    fullHtml += chartHtml;  // 图表放在参数摘要之后
     
     return fullHtml;
+}
+
+/**
+ * 渲染图表（在 DOM 更新后调用）
+ * @param {Object} params - 输入参数
+ * @param {Object} result - 计算结果
+ * @param {Function} calculateFn - 计算函数引用
+ */
+export function renderChart(params, result, calculateFn) {
+    if (!shouldShowChart(params, result)) return;
+    
+    const canvas = document.getElementById('drag-chart');
+    if (!canvas) return;
+    
+    // 销毁已有的 Chart 实例（避免重复渲染）
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    // 生成图表配置
+    const config = generateChartConfig(params, result, calculateFn);
+    if (!config) return;
+    
+    // 创建新图表
+    canvas.chart = new Chart(canvas, config);
 }

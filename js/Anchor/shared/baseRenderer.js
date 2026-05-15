@@ -103,9 +103,6 @@ export function renderDetailsCard(title, contentHtml) {
     `;
 }
 
-/**
- * 渲染参数摘要
- */
 export function renderParameterSummary(formulaModule, params) {
     if (!formulaModule || !formulaModule.parameters) return '';
     
@@ -131,7 +128,7 @@ export function renderParameterSummary(formulaModule, params) {
     };
     
     let summaryHtml = `
-        <div class="bg-ocean-50 rounded-lg p-4">
+        <div class="parameter-summary-container bg-ocean-50 rounded-lg p-4">
             <h3 class="font-bold text-ocean-800 mb-2">📝 参数摘要</h3>
             <div class="max-h-64 overflow-y-auto space-y-2">
     `;

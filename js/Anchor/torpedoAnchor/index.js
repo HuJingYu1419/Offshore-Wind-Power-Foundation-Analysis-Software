@@ -35,6 +35,7 @@ export const subScenarios = {
         calculate: verticalCalc.calculate,
         validate: verticalValid.validate,
         render: verticalRender.render,
+        renderChart: verticalRender.renderChart,
         getInfoContent: verticalInfo.getInfoContent
     },
     'horizontal-capacity': {
@@ -133,4 +134,9 @@ export function render(result, formulaModule, params, validation) {
 
 export function getInfoContent() {
     return getCurrentSubModule().getInfoContent();
+}
+
+// 在文件末尾添加 renderChart 导出
+export function renderChart(params, result, calculateFn) {
+    return getCurrentSubModule().renderChart(params, result, getCurrentSubModule().calculate);
 }

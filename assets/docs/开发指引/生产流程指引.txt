@@ -50,3 +50,7 @@ App identifier: com.offshore.geo.analysis
 Enable Windows trusted certificate? (y/N) N
 
 
+#实现tauri的导出文件功能
+需要插件：dialog、fs，并在tauri的配置做对应修改
+
+

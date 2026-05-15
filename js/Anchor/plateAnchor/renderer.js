@@ -10,6 +10,7 @@ import {
     renderValidationAlert,
     formatNumber
 } from '../shared/baseRenderer.js';
+import { generateChartConfig, shouldShowChart } from './chart.js';
 
 function formatNumberSmart(value) {
     return formatNumber(value, '');
@@ -115,6 +116,19 @@ export function render(result, formulaModule, params, validation = null) {
         </div>
     `;
     
+    // ========== 图表容器（占位） ==========
+    let chartHtml = '';
+    if (shouldShowChart(params, result)) {
+        chartHtml = `
+            <div class="mt-6 pt-4 border-t border-ocean-200">
+                <canvas id="plate-chart" style="max-height: 400px; width: 100%;"></canvas>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">提示：当埋深比足够大时，深锚的承载力系数确实会趋近于一个渐近值（约为11.9~12.56）</p>
+            <p class="text-xs text-gray-500 mt-1">软件中将该渐近过程简化为一个临界的常数表示</p>
+        `;
+        
+    }
+    
     // 组装完整结果
     let fullHtml = '';
     
@@ -125,6 +139,31 @@ export function render(result, formulaModule, params, validation = null) {
     fullHtml += renderResultHeader(result.text);
     fullHtml += renderDetailsCard('📊 计算结果详情', contentHtml);
     fullHtml += renderParameterSummary(formulaModule, params);
+    fullHtml += chartHtml;  // 图表放在参数摘要之后
     
     return fullHtml;
+}
+
+/**
+ * 渲染图表（在 DOM 更新后调用）
+ * @param {Object} params - 输入参数
+ * @param {Object} result - 计算结果
+ * @param {Function} calculateFn - 计算函数引用
+ */
+export function renderChart(params, result, calculateFn) {
+    if (!shouldShowChart(params, result)) return;
+    
+    const canvas = document.getElementById('plate-chart');
+    if (!canvas) return;
+    
+    // 销毁已有的 Chart 实例（避免重复渲染）
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    // 生成图表配置
+    const config = generateChartConfig(params, result, calculateFn);
+    
+    // 创建新图表
+    canvas.chart = new Chart(canvas, config);
 }

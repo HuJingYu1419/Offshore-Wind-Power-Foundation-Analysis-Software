@@ -333,6 +333,7 @@ function selectModule(moduleId) {
 /**
  * 执行计算（集成校验）
  */
+// 修改 main.js 中的 calculate 函数
 function calculate() {
     if (!currentModule) {
         alert("请先选择一个计算公式");
@@ -350,6 +351,28 @@ function calculate() {
     
     const result = currentModule.calculate(params);
     renderResult(result, currentModule, params, validation);
+
+    // 渲染图表（延迟执行，确保 DOM 已更新）
+    setTimeout(() => {
+        // 修改：尝试多种方式获取 renderChart
+        let renderChartFn = currentModule.renderChart;
+        
+        // 如果没有直接的 renderChart，尝试通过 getCurrentSubModule 获取
+        if (!renderChartFn && currentModule.getCurrentSubModule) {
+            const subModule = currentModule.getCurrentSubModule();
+            if (subModule && typeof subModule.renderChart === 'function') {
+                renderChartFn = subModule.renderChart.bind(subModule);
+            }
+        }
+        
+        if (typeof renderChartFn === 'function') {
+            // 传递子场景的 calculate 函数用于批量计算
+            const subCalculate = currentModule.getCurrentSubModule?.().calculate || currentModule.calculate;
+            renderChartFn(params, result, subCalculate);
+        } else {
+            console.warn('renderChart 函数未找到，模块:', currentModule);
+        }
+    }, 100);  // 增加延迟时间，确保 canvas 元素已渲染
 }
 
 /**

@@ -10,6 +10,7 @@ import {
     renderValidationAlert,
     formatNumber
 } from '../shared/baseRenderer.js';
+import { generateEnvelopeChart, shouldShowChart } from './chart.js';
 
 function formatNumberSmart(value) {
     return formatNumber(value, '');
@@ -154,6 +155,16 @@ export function render(result, formulaModule, params, validation = null) {
         </div>
     `;
     
+    // ========== 图表容器（占位） ==========
+    let chartHtml = '';
+    if (shouldShowChart(params, result)) {
+        chartHtml = `
+            <div class="mt-6 pt-4 border-t border-ocean-200">
+                <canvas id="pile-chart" style="max-height: 400px; width: 100%;"></canvas>
+            </div>
+        `;
+    }
+    
     let fullHtml = '';
     
     if (validation && (validation.warnings?.length > 0 || validation.infos?.length > 0)) {
@@ -163,6 +174,32 @@ export function render(result, formulaModule, params, validation = null) {
     fullHtml += renderResultHeader(result.text);
     fullHtml += renderDetailsCard('📊 桩锚承载力计算结果', contentHtml);
     fullHtml += renderParameterSummary(formulaModule, params);
+    fullHtml += chartHtml;  // 图表放在参数摘要之后
     
     return fullHtml;
+}
+
+/**
+ * 渲染图表（在 DOM 更新后调用）
+ * @param {Object} params - 输入参数
+ * @param {Object} result - 计算结果
+ * @param {Function} calculateFn - 计算函数引用
+ */
+export function renderChart(params, result, calculateFn) {
+    if (!shouldShowChart(params, result)) return;
+    
+    const canvas = document.getElementById('pile-chart');
+    if (!canvas) return;
+    
+    // 销毁已有的 Chart 实例（避免重复渲染）
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    // 生成图表配置
+    const config = generateEnvelopeChart(params, result, calculateFn);
+    if (!config) return;
+    
+    // 创建新图表
+    canvas.chart = new Chart(canvas, config);
 }

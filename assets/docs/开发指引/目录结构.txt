@@ -6,13 +6,13 @@
 │   └── style.css                           # 全局样式（响应式布局、固定侧边栏、折叠动画等）
 │
 ├── js/
-│   ├── main.js                             # 主入口模块（模块路由、事件绑定、计算分发）
+│   ├── main.js                             # 主入口模块（模块路由、事件绑定、计算分发、图表渲染）
 │   │
 │   ├── utils/                              # 全局工具函数目录
 │   │   ├── formGenerator.js                # 表单生成器（支持条件显示、分组表单）
 │   │   ├── resultRenderer.js               # 结果渲染主入口（分发器）✅ 已修复子场景路由
-        ├── conditionManager.js             # 条件显示工具               
-│   │   └── validator.js                    # 校验工具主入口（统一分发）✅ 已修复子场景路由
+│   │   ├── validator.js                    # 校验工具主入口（统一分发）✅ 已修复子场景路由
+│   │   └── conditionManager.js             # 条件显示管理器
 │   │
 │   ├── Anchor/                             # 锚固件模块根目录
 │   │   │
@@ -26,53 +26,65 @@
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
-│   │   │   ├── renderer.js
-│   │   │   └── infoContent.js
+│   │   │   ├── renderer.js                 # 修改：调用 chart.js，添加图表渲染
+│   │   │   ├── chart.js                    # ✨ 新增：破坏包络面曲线（H-V交互）
+│   │   │   ├── infoContent.js
+│   │   │   └── index.js                    # 修改：导出 renderChart
 │   │   │
-│   │   ├── torpedoAnchor/                  # ✅ 鱼雷锚模块（已重构为子场景架构）
-│   │   │   ├── index.js                    # 模块入口 + 子场景切换逻辑
+│   │   ├── torpedoAnchor/                  # ✅ 鱼雷锚模块（子场景架构）
+│   │   │   ├── index.js                    # 模块入口 + 子场景切换逻辑，导出 renderChart
 │   │   │   │
 │   │   │   ├── vertical-capacity/          # 子场景1：竖向承载力计算
-│   │   │   │   ├── config.js               # 参数配置（id: vertical-capacity）
-│   │   │   │   ├── calculator.js           # 计算逻辑（Randolph & Murphy公式）
-│   │   │   │   ├── validator.js            # 校验规则
-│   │   │   │   ├── renderer.js             # 结果渲染
-│   │   │   │   └── infoContent.js          # 模块信息展示
+│   │   │   │   ├── config.js
+│   │   │   │   ├── calculator.js
+│   │   │   │   ├── validator.js
+│   │   │   │   ├── renderer.js             # 修改：调用 chart.js，添加图表渲染
+│   │   │   │   ├── chart.js                # ✨ 新增：承载力 vs 埋深比曲线
+│   │   │   │   ├── infoContent.js
+│   │   │   │   └── index.js
 │   │   │   │
-│   │   │   ├── horizontal-capacity/        # 子场景2：水平承载力计算（占位）
+│   │   │   ├── horizontal-capacity/        # 子场景2：水平承载力计算
 │   │   │   │   ├── config.js
 │   │   │   │   ├── calculator.js
 │   │   │   │   ├── validator.js
 │   │   │   │   ├── renderer.js
-│   │   │   │   └── infoContent.js
+│   │   │   │   ├── infoContent.js
+│   │   │   │   └── index.js
 │   │   │   │
-│   │   │   └── penetration/                # 子场景3：安装贯入深度预测（占位）
+│   │   │   └── penetration/                # 子场景3：安装贯入深度预测
 │   │   │       ├── config.js
 │   │   │       ├── calculator.js
 │   │   │       ├── validator.js
 │   │   │       ├── renderer.js
-│   │   │       └── infoContent.js
+│   │   │       ├── infoContent.js
+│   │   │       └── index.js
 │   │   │
 │   │   ├── plateAnchor/                    # ✅ 板锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
-│   │   │   ├── renderer.js
-│   │   │   └── infoContent.js
+│   │   │   ├── renderer.js                 # 修改：调用 chart.js，添加图表渲染
+│   │   │   ├── chart.js                    # ✨ 新增：Nc vs 埋深比曲线（双Y轴）
+│   │   │   ├── infoContent.js
+│   │   │   └── index.js                    # 修改：导出 renderChart
 │   │   │
 │   │   ├── pileAnchor/                     # ✅ 桩锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
-│   │   │   ├── renderer.js
-│   │   │   └── infoContent.js
+│   │   │   ├── renderer.js                 # 修改：调用 chart.js，添加图表渲染
+│   │   │   ├── chart.js                    # ✨ 新增：破坏包络面曲线（H-V交互）
+│   │   │   ├── infoContent.js
+│   │   │   └── index.js                    # 修改：导出 renderChart
 │   │   │
 │   │   ├── dragAnchor/                     # ✅ 拖曳锚模块
 │   │   │   ├── config.js
 │   │   │   ├── calculator.js
 │   │   │   ├── validator.js
-│   │   │   ├── renderer.js
-│   │   │   └── infoContent.js
+│   │   │   ├── renderer.js                 # 修改：调用 chart.js，添加图表渲染
+│   │   │   ├── chart.js                    # ✨ 新增：z_UED vs 系缆夹角 c 曲线
+│   │   │   ├── infoContent.js
+│   │   │   └── index.js                    # 修改：导出 renderChart
 │   │   │
 │   │   └── suctionAnchor/                  # ✅ 吸力锚模块（子场景架构）
 │   │       ├── index.js                    # 模块入口 + 子场景切换逻辑

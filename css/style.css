@@ -381,7 +381,64 @@
     margin-top: 0.5rem;
 }
 
+/* ========== 导出按钮样式 ========== */
+.export-btn-group {
+    flex-shrink: 0;
+}
 
+.export-btn-group button {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.export-btn-group button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    background-color: #0369a1 !important;
+}
+
+.export-btn-group button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(2, 132, 199, 0.2);
+}
+
+/* 结果详情卡片头部样式优化 */
+.details-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* 响应式：小屏幕时按钮换行 */
+@media (max-width: 640px) {
+    .details-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .export-btn-group {
+        margin-left: 0 !important;
+        align-self: flex-start;
+    }
+    
+    .export-btn-group button {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* 确保结果卡片内的标题区域支持flex */
+.bg-white.rounded-xl.shadow-lg .details-card-header,
+.bg-white.rounded-xl.shadow-lg .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 
 /* 当屏幕超过 1600px 时，内容不再增宽，但边距继续增加 
 @media (min-width: 1600px) {
